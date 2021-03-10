@@ -7,6 +7,7 @@
 
 #include "Player.h"
 #include "Ball.h"
+#include <vector>
 #ifndef GAME_H_
 #define GAME_H_
 
@@ -32,8 +33,8 @@ private:
 	// game variables
 	sf::RenderWindow	window;
 	Player				player;
-	Ball				ball;
-	Ball				balls[50];
+	Ball				ball[60];
+	std::vector<Ball*> 	balls;
 
 };
 

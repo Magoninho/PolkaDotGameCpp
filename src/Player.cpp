@@ -25,7 +25,7 @@ Player::Player(sf::Vector2f position)
 void Player::increaseMass()
 {
 	playerMass++;
-	pShape.setRadius((float) playerMass * 5);
+	pShape.setRadius((float) playerMass * 10);
 	pShape.setOrigin(pShape.getLocalBounds().width/2, pShape.getLocalBounds().height/2);
 }
 
@@ -42,7 +42,7 @@ bool Player::collideCircle(sf::CircleShape& circle)
 
 	if (distance < circle1.getRadius() + circle2.getRadius())
 	{
-
+		increaseMass();
 		return true;
 	}
 }

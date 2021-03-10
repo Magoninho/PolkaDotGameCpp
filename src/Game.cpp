@@ -7,12 +7,19 @@
 
 #include "Game.h"
 #include <iostream>
+#include <stdio.h>
 using namespace std;
 
 Game::Game()
 	: window(sf::VideoMode(WIDTH, HEIGHT), "Polka Dot Game!"),
 	  player(sf::Vector2f(50.f, 50.f))
 {
+	// initialize balls
+
+	for (int i = 0; i < sizeof(ball)/sizeof(Ball); ++i) {
+		balls.push_back(&ball[i]);
+//		cout << balls[i]->bShape.getFillColor().toInteger() << endl;
+	}
 }
 
 void Game::processEvents()
@@ -40,23 +47,27 @@ void Game::update(sf::Time& deltaTime)
 {
 	player.setPosition(getMousePosition(window));
 	player.update(); // don't need deltaTime because the player follows the mouse, dt is not necessary
-	for (int i = 0; i < sizeof(balls)/sizeof(*balls); i++)
+	for (size_t i = 0; i < balls.size(); i++)
 	{
-		balls[i].update(deltaTime);
-		if (player.collideCircle(balls[i].bShape))
+		balls[i]->update(deltaTime);
+		if (player.collideCircle(balls[i]->bShape))
 		{
+			balls.erase(balls.begin() + i);
+
 //			cout << "colidiu" << endl;
 		}
 	}
 
 }
 
+
+
 void Game::render()
 {
 	window.clear(sf::Color::White);
 	player.draw(window);
-	for (int i = 0; i < sizeof(balls)/sizeof(*balls); i++) {
-		balls[i].draw(window);
+	for (size_t i = 0; i < balls.size(); i++) {
+		balls[i]->draw(window);
 
 	}
 
