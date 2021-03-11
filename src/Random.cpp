@@ -7,14 +7,21 @@
 
 #include <ctime>
 #include <cstdlib>
-
-int getRandomNumber(int min, int max)
+namespace Random
 {
-	static bool first = true;
-	if (first)
+	/**
+	 * \brief Draws the ball to a window
+	 *
+	 * \param window
+	 * */
+	int getRandomNumber(int min, int max)
 	{
-	  srand( time(0) ); // "seedando" só uma vez no programa todo
-	  first = false;
+		static bool first = true;
+		if (first)
+		{
+		  srand( time(0) ); // "seedando" só uma vez no programa todo
+		  first = false;
+		}
+		return (min + rand () % ((max + 1) - min));
 	}
-	return (min + rand () % ((max + 1) - min));
 }

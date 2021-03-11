@@ -7,16 +7,17 @@
 
 #include "Player.h"
 #include <iostream>
-using namespace std;
 
 Player::Player(sf::Vector2f position)
 {
-	playerMass = 3;
+	playerMass = 10;
 
-	pShape.setFillColor(sf::Color::Black);
+	pShape.setFillColor(sf::Color::Green);
 	pShape.setPosition(position);
-	pShape.setRadius((float) playerMass * 5);
+	pShape.setRadius((float) playerMass);
 	pShape.setOrigin(pShape.getLocalBounds().width/2, pShape.getLocalBounds().height/2);
+
+	isDead = false;
 }
 
 
@@ -25,10 +26,15 @@ Player::Player(sf::Vector2f position)
 void Player::increaseMass()
 {
 	playerMass++;
-	pShape.setRadius((float) playerMass * 10);
+	pShape.setRadius((float) playerMass);
 	pShape.setOrigin(pShape.getLocalBounds().width/2, pShape.getLocalBounds().height/2);
 }
 
+/**
+ * \brief Checks if the player is colliding with another circle
+ *
+ * \return bool
+ * */
 bool Player::collideCircle(sf::CircleShape& circle)
 {
 	sf::CircleShape& circle1 = pShape;
@@ -45,21 +51,34 @@ bool Player::collideCircle(sf::CircleShape& circle)
 		increaseMass();
 		return true;
 	}
+	return false;
 }
 
 void Player::update()
 {
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
-		increaseMass();
+		isDead = false;
 }
 
 void Player::draw(sf::RenderWindow& window)
 {
-	window.draw(pShape);
+	if (!isDead)
+		window.draw(pShape);
 }
 
 
 ////// getters and setters //////
+
+int Player::getPlayerMass()
+{
+	return playerMass;
+}
+void Player::setPlayerMass(int newMass)
+{
+	playerMass = newMass;
+	pShape.setRadius((float) playerMass);
+	pShape.setOrigin(pShape.getLocalBounds().width/2, pShape.getLocalBounds().height/2);
+}
 
 void Player::setPosition(sf::Vector2f position)
 {

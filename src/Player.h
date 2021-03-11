@@ -22,12 +22,18 @@ public:
 	bool			collideCircle(sf::CircleShape& circle);
 
 public:
+	// public variables
+	bool 			isDead;
+
+public:
 	// setters
 	void			setPosition(sf::Vector2f position);
 
 public:
 	// getters
 	sf::Vector2f	getPosition();
+	int				getPlayerMass();
+	void 			setPlayerMass(int newMass);
 
 private:
 	// Player methods

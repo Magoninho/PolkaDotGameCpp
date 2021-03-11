@@ -21,13 +21,20 @@ public:
 
 public:
 	sf::CircleShape	bShape;
+
 private:
-	// TODO: make everything random
+	void			newRandomSpeed();
+private:
 	int				x, y;
 	short int 		direction[2];
 	int 			speedX, speedY;
 	int 			radius;
 	sf::Color		color;
+
+public:
+	void			reset();
+	void			setPosition(int x, int y);
+
 
 };
 

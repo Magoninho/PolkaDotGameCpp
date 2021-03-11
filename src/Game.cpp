@@ -6,20 +6,23 @@
  */
 
 #include "Game.h"
-#include <iostream>
-#include <stdio.h>
-using namespace std;
+
+
 
 Game::Game()
 	: window(sf::VideoMode(WIDTH, HEIGHT), "Polka Dot Game!"),
 	  player(sf::Vector2f(50.f, 50.f))
 {
+
+	if (!music.openFromFile("Media/Audio/death.ogg"))
+		std::cout << "failed to load music" << std::endl;
+
+
+
 	// initialize balls
 
-	for (int i = 0; i < sizeof(ball)/sizeof(Ball); ++i) {
+	for (int i = 0; i < sizeof(ball)/sizeof(Ball); ++i)
 		balls.push_back(&ball[i]);
-//		cout << balls[i]->bShape.getFillColor().toInteger() << endl;
-	}
 }
 
 void Game::processEvents()
@@ -39,6 +42,8 @@ void Game::processEvents()
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
 			window.close();
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+			restart();
 	}
 }
 
@@ -46,37 +51,87 @@ void Game::processEvents()
 void Game::update(sf::Time& deltaTime)
 {
 	player.setPosition(getMousePosition(window));
-	player.update(); // don't need deltaTime because the player follows the mouse, dt is not necessary
+	player.update();
+
+	// checking if the player is colliding with some ball and updating all balls
 	for (size_t i = 0; i < balls.size(); i++)
 	{
 		balls[i]->update(deltaTime);
-		if (player.collideCircle(balls[i]->bShape))
-		{
-			balls.erase(balls.begin() + i);
 
-//			cout << "colidiu" << endl;
+		if (!player.isDead)
+		{
+			if (player.collideCircle(balls[i]->bShape))
+			{
+				if (player.getPlayerMass() < balls[i]->bShape.getRadius())
+				{
+					std::cout << "Morreu" << std::endl;
+					player.isDead = true;
+					music.play();
+
+				}
+
+				balls.erase(balls.begin() + i);
+
+			}
 		}
 	}
 
 }
 
+void Game::showDeathScreen(sf::RenderWindow& window)
+{
+	sf::Text text;
+	sf::Text shadow;
+	sf::Font font;
+	if (!font.loadFromFile("Media/Font/8-BIT.TTF"))
+		std::cout << "error while loading media" << std::endl;
 
+	text.setFont(font);
+	shadow.setFont(font);
+
+	text.setString("you died lol\npress space to restart");
+	shadow.setString("you died lol\npress space to restart");
+	text.setCharacterSize(32);
+	shadow.setCharacterSize(32);
+	text.setPosition((WIDTH/2)-100, HEIGHT/2);
+	shadow.setPosition(((WIDTH/2)-100)+2, (HEIGHT/2)+2);
+
+	text.setFillColor(sf::Color::Red);
+	shadow.setFillColor(sf::Color::Black);
+	window.draw(shadow);
+	window.draw(text);
+}
+
+void Game::restart()
+{
+	music.stop();
+	balls.erase(balls.begin(), balls.end());
+	player.isDead = false;
+
+	player.setPlayerMass(10);
+	for (int i = 0; i < sizeof(ball)/sizeof(Ball); ++i) {
+		balls.push_back(&ball[i]);
+		balls[i]->reset();
+	}
+}
 
 void Game::render()
 {
 	window.clear(sf::Color::White);
 	player.draw(window);
-	for (size_t i = 0; i < balls.size(); i++) {
+	for (size_t i = 0; i < balls.size(); i++)
 		balls[i]->draw(window);
 
-	}
+	if (player.isDead)
+		showDeathScreen(window);
+
 
 	window.display();
 }
 
 void Game::showFPS(int& fps)
 {
-	//	printf("%d fps\n", fps);
+	printf("%d fps\n", fps);
 }
 
 void Game::run()
