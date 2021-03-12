@@ -10,7 +10,7 @@
 
 
 #define WIDTH 1280
-#define HEIGHT WIDTH / 16 * 9 // aspect ratio
+#define HEIGHT (WIDTH / 16 * 9) // aspect ratio
 
 
 
