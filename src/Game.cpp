@@ -27,14 +27,6 @@ Game::Game()
 	if (!font.loadFromFile("Media/Font/8-BIT.TTF"))
 		std::cout << "error while loading media" << std::endl;
 
-
-	if (!victory.loadFromFile("Media/victory.png"))
-		std::cout << "error while loading image" << std::endl;
-
-	victorySprite.setTexture(victory);
-	victorySprite.setOrigin(victorySprite.getLocalBounds().width/2, victorySprite.getLocalBounds().height/2);
-	victorySprite.setPosition(WIDTH / 2, HEIGHT / 2);
-	victorySprite.setScale(0.7f, 0.7f);
 	win = false;
 
 
@@ -113,10 +105,10 @@ void Game::drawWin(sf::RenderWindow& window)
 
 	text.setString("YOU WOOOOONNNN");
 	shadow.setString(text.getString());
-	text.setCharacterSize(32);
-	shadow.setCharacterSize(32);
+	text.setCharacterSize(64);
+	shadow.setCharacterSize(text.getCharacterSize());
 	text.setPosition((WIDTH/2)-100, HEIGHT/2);
-	shadow.setPosition(((WIDTH/2)-100)+2, (HEIGHT/2)+2);
+	shadow.setPosition(((WIDTH/2)-100)+3, (HEIGHT/2)+3);
 
 	text.setFillColor(sf::Color::Blue);
 	shadow.setFillColor(sf::Color::Black);
@@ -138,10 +130,13 @@ void Game::showDeathScreen(sf::RenderWindow& window)
 
 	text.setString("you died lol\npress space to restart");
 	shadow.setString(text.getString());
-	text.setCharacterSize(32);
-	shadow.setCharacterSize(32);
-	text.setPosition((WIDTH/2)-100, HEIGHT/2);
-	shadow.setPosition(((WIDTH/2)-100)+2, (HEIGHT/2)+2);
+	text.setCharacterSize(48);
+	shadow.setCharacterSize(text.getCharacterSize());
+	text.setPosition((WIDTH/2), HEIGHT/2);
+	shadow.setPosition(((WIDTH/2))+3, (HEIGHT/2)+3);
+
+	text.setOrigin(text.getLocalBounds().width/2, text.getLocalBounds().height/2);
+	shadow.setOrigin(shadow.getLocalBounds().width/2, shadow.getLocalBounds().height/2);
 
 	text.setFillColor(sf::Color::Red);
 	shadow.setFillColor(sf::Color::Black);
