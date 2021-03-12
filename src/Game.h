@@ -32,16 +32,31 @@ private:
 	void 				update(sf::Time& deltaTime);
 	void				render();
 	void				restart();
-	void				showFPS(int& fps);
+	void				showFPS(float fps);
 	void 				showDeathScreen(sf::RenderWindow& window);
+	void				drawWin(sf::RenderWindow& window); // TODO: idk if its a good idea lol
 
 private:
 	// game variables
-	sf::Music 			music;
+
+	bool 				win;
+
+	sf::Texture 		victory;
+	sf::Sprite 			victorySprite;
+
+	sf::Text 			text;
+	sf::Text 			shadow;
+	sf::Font 			font;
+
+
+	sf::Music			winSong;
+	sf::Music 			deathSong;
+	sf::Music 			themeSong;
 	sf::RenderWindow	window;
 	Player				player;
 	Ball				ball[150];
 	std::vector<Ball*> 	balls;
+
 
 };
 

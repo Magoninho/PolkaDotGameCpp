@@ -14,13 +14,31 @@ Game::Game()
 	  player(sf::Vector2f(50.f, 50.f))
 {
 
-	if (!music.openFromFile("Media/Audio/death.ogg"))
+	// initializing music files
+	if (!deathSong.openFromFile("Media/Audio/death.ogg"))
 		std::cout << "failed to load music" << std::endl;
+	if (!themeSong.openFromFile("Media/Audio/theme.ogg"))
+		std::cout << "failed to load music" << std::endl;
+	if (!winSong.openFromFile("Media/Audio/win.wav"))
+			std::cout << "failed to load music" << std::endl;
+	themeSong.play();
 
+	// initializing fonts
+	if (!font.loadFromFile("Media/Font/8-BIT.TTF"))
+		std::cout << "error while loading media" << std::endl;
+
+
+	if (!victory.loadFromFile("Media/victory.png"))
+		std::cout << "error while loading image" << std::endl;
+
+	victorySprite.setTexture(victory);
+	victorySprite.setOrigin(victorySprite.getLocalBounds().width/2, victorySprite.getLocalBounds().height/2);
+	victorySprite.setPosition(WIDTH / 2, HEIGHT / 2);
+	victorySprite.setScale(0.7f, 0.7f);
+	win = false;
 
 
 	// initialize balls
-
 	for (int i = 0; i < sizeof(ball)/sizeof(Ball); ++i)
 		balls.push_back(&ball[i]);
 }
@@ -66,11 +84,20 @@ void Game::update(sf::Time& deltaTime)
 				{
 					std::cout << "Morreu" << std::endl;
 					player.isDead = true;
-					music.play();
+					themeSong.pause();
+					deathSong.play();
 
 				}
 
 				balls.erase(balls.begin() + i);
+
+				if (balls.empty() && player.isDead != true)
+				{
+					win = true;
+					winSong.play();
+					themeSong.pause();
+
+				}
 
 			}
 		}
@@ -78,19 +105,39 @@ void Game::update(sf::Time& deltaTime)
 
 }
 
-void Game::showDeathScreen(sf::RenderWindow& window)
+void Game::drawWin(sf::RenderWindow& window)
 {
-	sf::Text text;
-	sf::Text shadow;
-	sf::Font font;
-	if (!font.loadFromFile("Media/Font/8-BIT.TTF"))
-		std::cout << "error while loading media" << std::endl;
 
 	text.setFont(font);
 	shadow.setFont(font);
 
+	text.setString("YOU WOOOOONNNN");
+	shadow.setString(text.getString());
+	text.setCharacterSize(32);
+	shadow.setCharacterSize(32);
+	text.setPosition((WIDTH/2)-100, HEIGHT/2);
+	shadow.setPosition(((WIDTH/2)-100)+2, (HEIGHT/2)+2);
+
+	text.setFillColor(sf::Color::Blue);
+	shadow.setFillColor(sf::Color::Black);
+
+	text.setOrigin(text.getLocalBounds().width/2, text.getLocalBounds().height/2);
+	shadow.setOrigin(shadow.getLocalBounds().width/2, shadow.getLocalBounds().height/2);
+
+	text.rotate(0.02f);
+	shadow.rotate(0.02f);
+	window.draw(shadow);
+	window.draw(text);
+
+}
+
+void Game::showDeathScreen(sf::RenderWindow& window)
+{
+	text.setFont(font);
+	shadow.setFont(font);
+
 	text.setString("you died lol\npress space to restart");
-	shadow.setString("you died lol\npress space to restart");
+	shadow.setString(text.getString());
 	text.setCharacterSize(32);
 	shadow.setCharacterSize(32);
 	text.setPosition((WIDTH/2)-100, HEIGHT/2);
@@ -104,7 +151,12 @@ void Game::showDeathScreen(sf::RenderWindow& window)
 
 void Game::restart()
 {
-	music.stop();
+	themeSong.play();
+
+	win = false;
+	winSong.stop();
+
+	deathSong.stop();
 	balls.erase(balls.begin(), balls.end());
 	player.isDead = false;
 
@@ -125,22 +177,25 @@ void Game::render()
 	if (player.isDead)
 		showDeathScreen(window);
 
+	if (win)
+		drawWin(window);
 
 	window.display();
 }
 
-void Game::showFPS(int& fps)
+void Game::showFPS(float fps)
 {
-	printf("%d fps\n", fps);
+	std::cout << fps << " fps" << std::endl;
 }
 
 void Game::run()
 {
-	int timer = 0;
+	int frames = 0;
 	int fps = 60;
 	sf::Clock clock;
 	sf::Time timeSinceLastUpdate = sf::Time::Zero;
 	sf::Time timePerFrame = sf::seconds(1.f / fps);
+	sf::Time timer = sf::Time::Zero;
 
 	while (window.isOpen())
 	{
@@ -151,17 +206,23 @@ void Game::run()
 		timeSinceLastUpdate += clock.restart();
 		processEvents();
 
-		while (timeSinceLastUpdate >= timePerFrame) // time per frame
+		while (timeSinceLastUpdate > timePerFrame) // time per frame
 		{
 			timeSinceLastUpdate -= timePerFrame;
 			processEvents();
 			update(timePerFrame);
-			timer++;
+			// completou 1 segundo (60 frames)
+			frames++;
 		}
-		if (timer >= fps)
+
+
+		// probably this is not even working (help pls)
+		if (frames > fps)
 		{
-			showFPS(timer);
-			timer = 0;
+
+			showFPS(1.0f / clock.getElapsedTime().asSeconds());
+			frames = 0;
+			clock.restart().asSeconds();
 		}
 
 		render();
